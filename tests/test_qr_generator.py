@@ -1,7 +1,8 @@
 import os
 import pytest
 import random
-from qr_generator import generate_qr_code, QRCodeConfig
+from services.qr_code_service import generate_qr_code
+from models.qr_code_model import QRCodeConfig
 
 def test_generate_qr_code_creates_file(tmp_path):
     test_data = "https://example.com"
@@ -38,4 +39,4 @@ def test_generate_qr_code_with_random_data(tmp_path):
 
     assert os.path.exists(result_path)
     assert result_path.endswith(".png")
-    assert os.path.getsize(result_path) > 0  # Ensure the file is not empty
+    assert os.path.getsize(result_path) > 0  
