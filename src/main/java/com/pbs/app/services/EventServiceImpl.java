@@ -20,7 +20,9 @@ public class EventServiceImpl implements EventService{
 
     @Override
     @Transactional
-    public Event createEvent(Event event) {
+    public Event createEvent(Event event)
+    {
+        event.setId(null); // Ensure the ID is null to use the generator mother fucker nicolas
         return eventRepository.save(event);
     }
 

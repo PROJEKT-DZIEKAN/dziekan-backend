@@ -25,6 +25,9 @@ public class Event {
     @Column
     private Long id;
 
+    @Version
+    private Long version;
+
     @NotBlank
     @Size(max = 255)
     @Column

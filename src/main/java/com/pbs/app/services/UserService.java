@@ -19,6 +19,7 @@ public class UserService {
     }
 
     public User createUser(User user) {
+        user.setId(null); // Ensure the ID is null to use the generator
         return userRepository.save(user);
     }
 

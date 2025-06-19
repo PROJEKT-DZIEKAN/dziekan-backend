@@ -15,8 +15,11 @@ import java.time.LocalDateTime;
 public class EventRegistration {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private Long id;
+
+    @Version
+    private Long version;
 
     @ManyToOne
     @JoinColumn(name = "event_id", nullable = false)

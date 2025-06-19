@@ -40,6 +40,7 @@ public class FeedServiceImpl implements FeedPostService {
     @Override
     @Transactional
     public FeedPost createPost(FeedPost feedPost) {
+        feedPost.setId(null); // Wymusza użycie generatora
         return feedRepository.save(feedPost);
     }
 
