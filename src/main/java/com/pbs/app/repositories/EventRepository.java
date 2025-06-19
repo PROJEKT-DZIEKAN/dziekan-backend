@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long> {
@@ -21,9 +20,13 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     List<Event> findByStartTimeBetween(LocalDateTime start, LocalDateTime end);
 
+    List<Event> findByStartTimeAfter(LocalDateTime dateTime);
+
     List<Event> findByTitleContainingIgnoreCase(String keyword);
 
     List<Event> findByLocationContainingIgnoreCase(String location);
+
+    List<Event> findByDescriptionContainingIgnoreCase(String description);
 
     @Query("SELECT e FROM Event e WHERE e.maxParticipants IS NULL OR (SELECT COUNT(r) FROM EventRegistration r WHERE r.event = e) < e.maxParticipants")
     List<Event> findEventsWithAvailableSpots();
