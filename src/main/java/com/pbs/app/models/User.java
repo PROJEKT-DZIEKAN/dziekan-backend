@@ -7,6 +7,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import com.pbs.app.enums.RegistrationStatus;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "users")
 @Data
@@ -30,7 +33,8 @@ public class User {
     @Column(name = "registration_status", nullable = false)
     private RegistrationStatus registrationStatus = RegistrationStatus.NotRegistered;
 
-
+    @OneToMany(mappedBy = "participant", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<EventRegistration> eventRegistrations = new ArrayList<>();
 
 
 }
