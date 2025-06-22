@@ -1,5 +1,6 @@
 package com.pbs.app.models;
 
+import com.pbs.app.enums.RegistrationStatus;
 import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -35,8 +36,18 @@ public class EventRegistration {
     @Column(nullable = false)
     private LocalDateTime registeredAt = LocalDateTime.now();
 
-    @Column
-    private Boolean attended = false;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private RegistrationStatus status = RegistrationStatus.REGISTERED;
 
-    // Można dodać więcej pól dotyczących rejestracji, te stopnie np :)
+    @Column
+    private LocalDateTime statusUpdatedAt;
+
+//    // Metoda do aktualizacji statusu
+//    public void updateStatus(RegistrationStatus newStatus) {
+//        this.status = newStatus;
+//        this.statusUpdatedAt = LocalDateTime.now();
+//    }
+//
+
 }
