@@ -1,6 +1,7 @@
 package com.pbs.app.models;
 
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -63,10 +64,12 @@ public class Event {
     @Column
     private Integer maxParticipants;
 
+    @Schema(hidden = true)
     @ManyToOne
-    @JoinColumn(name = "organizer_id", nullable = false)
+    @JoinColumn(nullable = true)
     private User organizer;
 
+    @Schema(hidden = true)
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EventRegistration> registrations = new ArrayList<>();
 }
