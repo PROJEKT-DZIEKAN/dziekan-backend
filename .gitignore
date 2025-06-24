@@ -1,0 +1,7 @@
+__pycache__/*
+.pytest_cache/*
+myenv/*
+tests/__pycache__/*
+models/__pycache__/*
+services/__pycache__/*
+output/*
