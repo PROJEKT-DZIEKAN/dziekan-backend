@@ -39,5 +39,7 @@ public class User {
     @OneToMany(mappedBy = "participant", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EventRegistration> eventRegistrations = new ArrayList<>();
 
-
+    @ManyToOne
+    @JoinColumn(name = "group_id")
+    private Group group;
 }
