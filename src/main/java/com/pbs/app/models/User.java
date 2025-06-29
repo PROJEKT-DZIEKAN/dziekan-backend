@@ -1,14 +1,8 @@
 package com.pbs.app.models;
-
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import com.pbs.app.enums.RegistrationStatus;
-
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Table(name = "users")
@@ -17,16 +11,14 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class User {
-
-    @Id
-    @GeneratedValue
+    @Id @GeneratedValue
     private Long id;
 
     @Version
     private Long version;
 
     @Column(name="first_name", nullable = false)
-    private String FirstName;
+    private String firstName;
 
     @Column(name="surname", nullable = false)
     private String surname;
@@ -39,7 +31,12 @@ public class User {
     @OneToMany(mappedBy = "participant", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EventRegistration> eventRegistrations = new ArrayList<>();
 
-    @ManyToOne
-    @JoinColumn(name = "group_id")
-    private Group group;
+    @ManyToMany
+    @JoinTable(
+      name = "user_group",
+      joinColumns = @JoinColumn(name = "user_id"),
+      inverseJoinColumns = @JoinColumn(name = "group_id")
+    )
+    @Builder.Default
+    private Set<Group> groups = new HashSet<>();
 }

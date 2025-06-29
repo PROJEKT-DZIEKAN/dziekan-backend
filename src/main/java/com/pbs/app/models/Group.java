@@ -1,52 +1,51 @@
 package com.pbs.app.models;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
+import jakarta.validation.constraints.*;
+import lombok.*;
 import java.time.LocalDateTime;
-import java.util.AbstractList;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Entity
+@Table(name = "groups")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "\"group\"")
+@Builder
 public class Group {
-    @Id
-    @GeneratedValue
+    @Id @GeneratedValue
     private Long id;
 
     @Version
     private Long version;
 
-    @Column(nullable = false)
-    @Size(max = 255)
+    @Column(nullable = false) @Size(max = 255)
     private String name;
 
-    @Column
-    @Size(max = 2000)
+    @Column @Size(max = 2000)
     private String description;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    @Min(0)
-    @Column
+    @Min(0) @Column
     private Integer maxParticipants;
 
     @Schema(hidden = true)
     @ManyToOne
-    @JoinColumn(nullable = true)
+    @JoinColumn(name = "organizer_id", nullable = true)
     private User organizer;
 
-    @Schema(hidden = true)
-    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<User> participants = new ArrayList<>();
+    @ManyToMany(mappedBy = "groups")
+    @Builder.Default
+    private Set<User> participants = new HashSet<>();
+
+    @ManyToMany
+    @JoinTable(
+      name = "group_event",
+      joinColumns = @JoinColumn(name = "group_id"),
+      inverseJoinColumns = @JoinColumn(name = "event_id")
+    )
+    @Builder.Default
+    private Set<Event> events = new HashSet<>();
 }
