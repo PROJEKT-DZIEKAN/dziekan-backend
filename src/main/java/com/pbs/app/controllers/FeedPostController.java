@@ -1,6 +1,5 @@
 package com.pbs.app.controllers;
 
-
 import com.pbs.app.models.FeedPost;
 import com.pbs.app.services.FeedServiceImpl;
 import jakarta.persistence.EntityNotFoundException;
@@ -8,7 +7,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController

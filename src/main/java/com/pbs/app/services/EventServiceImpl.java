@@ -5,6 +5,7 @@ import com.pbs.app.models.User;
 import com.pbs.app.repositories.EventRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -14,6 +15,7 @@ import java.util.List;
 public class EventServiceImpl implements EventService{
     private final EventRepository eventRepository;
 
+    @Autowired
     public EventServiceImpl(EventRepository eventRepository) {
         this.eventRepository = eventRepository;
     }
