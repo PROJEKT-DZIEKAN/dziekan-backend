@@ -1,10 +1,15 @@
 Jak to odpalic?
 
 -wersja pythona: 3.12
+
 -jesli na windowsie pracujecie to w terminalu wpisz: 
+
 1.python -m venv venv
+
 2. venv/Scripts/activate
+   
 3. pip install -r requirements.txt
+   
 aby odpalic aplikacje: uvicorn app:app --port 9098
 
 
