@@ -3,7 +3,7 @@ from pydantic import BaseModel, field_validator
 class QRCodeConfig(BaseModel):
     data: str
     filename: str = 'MyQRCode.png'
-    
+
     @field_validator('data')
     @classmethod
     def data_must_not_be_empty(cls, value):
@@ -20,3 +20,8 @@ class QRCodeConfig(BaseModel):
         for char in invalid_chars:
             value = value.replace(char, '_')
         return value
+
+class QRRequest(BaseModel):
+    user_id: int
+    base_url: str
+    filename: str = "MyQRCode.png"
