@@ -28,7 +28,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     private final JWTService jwtService;
 
 
-    @Value("${ALLOWED_ORIGINS}")
+    @Value("${allowed.origins}")
     private String allowedOrigins;
 
     @Override
