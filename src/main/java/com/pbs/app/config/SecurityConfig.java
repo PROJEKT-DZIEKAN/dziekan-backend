@@ -50,7 +50,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public CorsConfigurationSource corsConfigurationSource(@Value("${ALLOWED_ORIGINS}") String originsRaw) {
+    public CorsConfigurationSource corsConfigurationSource(@Value("${allowed.origins}") String originsRaw) {
 
         CorsConfiguration cfg = new CorsConfiguration();
         List<String> allowedOrigins = List.of(originsRaw.split(","));
