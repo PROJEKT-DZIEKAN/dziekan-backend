@@ -17,11 +17,8 @@ import java.time.LocalDateTime;
 public class EventRegistration {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Version
-    private Long version;
 
     @Hidden
     @ManyToOne

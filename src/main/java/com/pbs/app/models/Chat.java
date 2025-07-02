@@ -7,16 +7,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "chats",
-       uniqueConstraints = @UniqueConstraint(
-         columnNames = {"user_a_id", "user_b_id"}
-       ))
+@Table(name = "chats", uniqueConstraints = @UniqueConstraint(columnNames = {"user_a_id", "user_b_id"}))
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class Chat {
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(optional = false)
@@ -27,6 +25,11 @@ public class Chat {
     @JoinColumn(name = "user_b_id", nullable = false)
     private User userB;
 
+    @Builder.Default
+    @Column(name="sent_at", nullable=false, updatable=false)
+    private Instant sentAt = Instant.now();
+
+    @Builder.Default
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt = Instant.now();
 

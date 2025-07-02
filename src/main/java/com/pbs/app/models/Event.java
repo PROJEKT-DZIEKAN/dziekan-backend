@@ -13,11 +13,9 @@ import java.util.*;
 @AllArgsConstructor
 @Builder
 public class Event {
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Version
-    private Long version;
 
     @NotBlank @Size(max = 255) @Column
     private String title;

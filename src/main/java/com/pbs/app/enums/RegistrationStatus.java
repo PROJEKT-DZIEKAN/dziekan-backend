@@ -1,7 +1,7 @@
 package com.pbs.app.enums;
 
 public enum RegistrationStatus {
-    NotRegistered, // wypierdol to Nicolas
+    NotRegistered,
     REGISTERED,
     FIRST_STEP_COMPLETED,
     SECOND_STEP_COMPLETED,

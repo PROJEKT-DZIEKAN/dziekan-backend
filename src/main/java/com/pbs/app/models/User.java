@@ -3,6 +3,8 @@ package com.pbs.app.models;
 import jakarta.persistence.*;
 import lombok.*;
 import com.pbs.app.enums.RegistrationStatus;
+import org.hibernate.annotations.ColumnDefault;
+
 import java.util.*;
 
 @Entity
@@ -16,9 +18,6 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    @Version
-//    private Long version;
-
     @Column(name = "first_name", nullable = false)
     private String firstName;
 
@@ -27,7 +26,8 @@ public class User {
 
     @Builder.Default
     @Enumerated(EnumType.STRING)
-    @Column(name = "registration_status")
+    @Column(name = "registration_status", nullable = false)
+    @ColumnDefault("'NotRegistered'")
     private RegistrationStatus registrationStatus = RegistrationStatus.NotRegistered;
 
     @OneToMany(mappedBy = "participant", cascade = CascadeType.ALL, orphanRemoval = true)

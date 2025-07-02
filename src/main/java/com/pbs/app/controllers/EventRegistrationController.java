@@ -1,6 +1,5 @@
 package com.pbs.app.controllers;
 
-
 import com.pbs.app.models.EventRegistration;
 import com.pbs.app.services.EventRegistrationService;
 import jakarta.validation.Valid;
@@ -9,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import com.pbs.app.enums.RegistrationStatus;
+
 
 @RestController
 @RequestMapping("/api/event-registrations")

@@ -3,6 +3,8 @@ package com.pbs.app.controllers;
 import com.pbs.app.models.User;
 import com.pbs.app.repositories.UserRepository;
 import com.pbs.app.services.JWTService;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,10 +35,41 @@ public class UserController {
 //        return ResponseEntity.ok(new TokenResponse(access, refresh));
 //    }
 
-    @GetMapping("/users/me") //wrazie potrzeby endpoint aby odpytac baze o informacje o aktualnego usera
+    @PostMapping("/auth/register-by-name")
+    public ResponseEntity<?> registerByName(@RequestBody RegisterRequest request) {
+        User user = User.builder()
+                .firstName(request.firstName())
+                .surname(request.surname())
+                .build();
+        User saved = userRepository.save(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+    }
+    @PostMapping("/auth/login-by-id")
+    public ResponseEntity<?> loginById(@RequestBody IdLoginRequest request) {
+        Optional<User> userOpt = userRepository.findById(request.userId());
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.status(401).body("Invalid user ID");
+        }
+        User user = userOpt.get();
+        String accessToken = jwtService.generateAccessToken(user);
+        String refreshToken = jwtService.generateRefreshToken(user);
+        return ResponseEntity.ok(new TokenResponse(accessToken, refreshToken));
+    }
+
+    @GetMapping("/users/me")
     public ResponseEntity<?> getCurrentUser(@RequestHeader("Authorization") String authHeader) {
-        String token  = authHeader.replace("Bearer ", "");
-        String userId = jwtService.extractUserId(token);
+        String token = authHeader.replace("Bearer ", "");
+        String userId;
+        try {
+            userId = jwtService.extractUserId(token);
+        } catch (ExpiredJwtException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                                 .body("Token expired, please log in again");
+        } catch (JwtException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                                 .body("Invalid token");
+        }
+
         Optional<User> opt = userRepository.findById(Long.parseLong(userId));
         if (opt.isPresent()) {
             return ResponseEntity.ok(opt.get());
@@ -123,6 +156,22 @@ public class UserController {
 
         return ResponseEntity.ok(new TokenResponse(access, refresh));
     }
+    @PostMapping("/refresh-token")
+    public ResponseEntity<TokenResponse> refreshToken(@RequestBody RefreshRequest req) {
+        try {
+            String refresh = req.refreshToken();
+            String userId = jwtService.extractUserId(refresh);
+            if (!jwtService.isTokenValid(refresh, userId)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+            }
+            User user = userRepository.findById(Long.parseLong(userId)).orElseThrow();
+            String newAccess = jwtService.generateAccessToken(user);
+            String newRefresh = jwtService.generateRefreshToken(user);
+            return ResponseEntity.ok(new TokenResponse(newAccess, newRefresh));
+        } catch (JwtException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+    }
 
 
 
@@ -130,6 +179,8 @@ public class UserController {
     // ------------------------ DTOs ------------------------
     private record RegisterRequest(String firstName, String surname) {}
     private record LoginRequest(String firstName, String surname) {}
-    private record TokenResponse(String accessToken, String refreshToken) {}
+    private record RefreshRequest(String refreshToken) {}
     private record QrLoginRequest(Long userId) {}
+    private record IdLoginRequest(Long userId) {}
+    private record TokenResponse(String accessToken, String refreshToken) {}
 }

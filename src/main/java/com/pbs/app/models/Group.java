@@ -13,11 +13,12 @@ import java.util.*;
 @AllArgsConstructor
 @Builder
 public class Group {
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Version
-    private Long version;
+//    @Version
+//    private Long version;
 
     @Column(nullable = false) @Size(max = 255)
     private String name;
@@ -33,7 +34,7 @@ public class Group {
 
     @Schema(hidden = true)
     @ManyToOne
-    @JoinColumn(name = "organizer_id", nullable = true)
+    @JoinColumn(name = "organizer_id")
     private User organizer;
 
     @ManyToMany(mappedBy = "groups")

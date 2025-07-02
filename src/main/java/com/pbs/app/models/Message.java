@@ -11,7 +11,8 @@ import java.time.Instant;
 @AllArgsConstructor
 @Builder
 public class Message {
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(optional = false)
@@ -22,9 +23,17 @@ public class Message {
     @JoinColumn(name = "sender_id", nullable = false)
     private User sender;
 
+    @Column(name="sent_at", nullable=false, updatable=false)
+    private Instant sentAt;
+
+    @PrePersist
+    public void prePersist() {
+        if (sentAt == null) {
+            sentAt = Instant.now();
+        }
+    }
+
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
-    @Column(name = "sent_at", nullable = false, updatable = false)
-    private Instant sentAt = Instant.now();
 }

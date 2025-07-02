@@ -17,16 +17,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor         // generuje konstruktor ze wszystkimi polami
 public class FeedPost {
     @Id
-    @GeneratedValue
-    @Column
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotBlank
     @Column
     private String title;
-
-    @Version
-    private Long version;
 
     @NotBlank
     @Size(max = 2000)
