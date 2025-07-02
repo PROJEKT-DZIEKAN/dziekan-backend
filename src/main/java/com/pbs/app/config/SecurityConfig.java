@@ -1,6 +1,7 @@
 package com.pbs.app.config;
 
 import com.pbs.app.security.JwtAuthenticationFilter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -49,14 +50,13 @@ public class SecurityConfig {
     }
 
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
+    public CorsConfigurationSource corsConfigurationSource(@Value("${ALLOWED_ORIGINS}") String originsRaw) {
+
         CorsConfiguration cfg = new CorsConfiguration();
-        cfg.setAllowedOriginPatterns(List.of(
-          "http://localhost:5173",
-          "http://localhost:5174",
-          "http://localhost:5175"
-        ));
-        cfg.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
+        List<String> allowedOrigins = List.of(originsRaw.split(","));
+        cfg.setAllowedOriginPatterns(allowedOrigins);
+
+        cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         cfg.setAllowCredentials(true);
         cfg.setAllowedHeaders(List.of("*"));
 
