@@ -1,0 +1,7 @@
+/* w NavBar.css, FilmsPage.css, FilmTile.css i AddFilmPage.css na samej górze */
+body, .navbar, .films-page, .film-tile, .add-film-page {
+  background-color: #222;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
