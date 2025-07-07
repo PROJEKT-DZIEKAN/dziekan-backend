@@ -56,6 +56,21 @@ public class UserController {
         return ResponseEntity.ok(new TokenResponse(accessToken, refreshToken));
     }
 
+    @PostMapping("/auth/login-by-user-id/{userId}")
+public ResponseEntity<?> loginByUserId(@PathVariable Long userId) {
+    Optional<User> userOpt = userRepository.findById(userId);
+
+    if (userOpt.isEmpty()) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid user ID");
+    }
+
+    User user = userOpt.get();
+    String access = jwtService.generateAccessToken(user);
+    String refresh = jwtService.generateRefreshToken(user);
+
+    return ResponseEntity.ok(new TokenResponse(access, refresh));
+}
+
     @GetMapping("/users/me")
     public ResponseEntity<?> getCurrentUser(@RequestHeader("Authorization") String authHeader) {
         String token = authHeader.replace("Bearer ", "");
