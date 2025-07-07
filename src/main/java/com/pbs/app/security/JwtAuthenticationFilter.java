@@ -49,6 +49,7 @@ protected boolean shouldNotFilter(HttpServletRequest request) throws ServletExce
            path.startsWith("/api/qr/") ||
            path.equals("/api/refresh-token") ||
            path.startsWith("/swagger-ui") ||
+          path.startsWith("/swagger-ui/index.html") ||
            path.startsWith("/v3/api-docs");
 }
 
