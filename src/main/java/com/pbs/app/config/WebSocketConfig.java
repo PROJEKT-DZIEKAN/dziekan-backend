@@ -60,6 +60,41 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                     }
                 })
                 .withSockJS();
+
+        registry.addEndpoint("/ws-notifications")
+                .setAllowedOrigins(origins.toArray(new String[0]))
+                .setHandshakeHandler(new DefaultHandshakeHandler() {
+                    @Override
+                    protected Principal determineUser(ServerHttpRequest req, WebSocketHandler wsh,
+                                                      Map<String, Object> attrs) {
+                        String token = UriComponentsBuilder.fromUri(req.getURI())
+                                .build()
+                                .getQueryParams()
+                                .getFirst("token");
+                        if (token != null) {
+                            try {
+                                String userId = jwtService.extractUserId(token);
+                                log.info("Handshake auth OK, principal={}", userId);
+                                return new StompPrincipal(userId);
+                            } catch (Exception e) {
+                                log.error("Handshake auth error", e);
+                            }
+                        }
+                        return super.determineUser(req, wsh, attrs);
+                    }
+                })
+                .withSockJS();
+        registry.addEndpoint("/ws-test")
+                .setAllowedOriginPatterns("*") // Tymczasowo dla testów
+                .setHandshakeHandler(new DefaultHandshakeHandler() {
+                    @Override
+                    protected Principal determineUser(ServerHttpRequest req, WebSocketHandler wsh,
+                                                      Map<String, Object> attrs) {
+                        log.info("WebSocket handshake dla testów");
+                        return new StompPrincipal("1");
+                    }
+                })
+                .withSockJS();
     }
 
     @Override
