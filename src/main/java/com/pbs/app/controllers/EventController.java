@@ -6,6 +6,7 @@ import com.pbs.app.services.EventServiceImpl;
 import com.pbs.app.services.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/events")
 @RequiredArgsConstructor
+@Builder
 public class EventController {
     private final EventServiceImpl eventService;
     private final UserService userService;
