@@ -1,6 +1,7 @@
 package com.pbs.app.services;
 
 import com.pbs.app.models.User;
+import com.pbs.app.models.Role;
 import com.pbs.app.security.JWTConfig;
 import io.jsonwebtoken.*;
 import jakarta.annotation.PostConstruct;
