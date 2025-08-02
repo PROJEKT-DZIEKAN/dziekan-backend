@@ -1,12 +1,14 @@
 package com.pbs.app.services;
 
 import com.pbs.app.models.User;
+import com.pbs.app.models.Role;
 import com.pbs.app.security.JWTConfig;
 import io.jsonwebtoken.*;
 import jakarta.annotation.PostConstruct;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
-
+import java.util.*;
+import java.util.stream.*;
 import javax.crypto.SecretKey;
 import java.util.Date;
 
@@ -36,12 +38,16 @@ public class JWTService {
 
     public String generateAccessToken(User user) {
         long now = System.currentTimeMillis();
+
+        List<String> roleNames = user.getRoles().stream()
+                                 .map(Role::getRoleName)
+                                 .collect(Collectors.toList());
         return Jwts.builder()
                    .setSubject(user.getId().toString())
                    .claim("firstName", user.getFirstName())
                    .claim("surname",   user.getSurname())
                    .claim("status",    user.getRegistrationStatus().name())
-                   .claim("role",      "")
+                   .claim("role",      roleNames)
                    .setIssuedAt(new Date(now))
                    .setExpiration(new Date(now + ACCESS_TOKEN_EXPIRATION))
                    .signWith(signingKey, SignatureAlgorithm.HS256)

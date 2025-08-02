@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.Generated;
 import lombok.NoArgsConstructor;
 import java.util.HashSet;
+import lombok.*;
 import java.util.Set;
 
 @Entity
@@ -13,6 +14,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@EqualsAndHashCode(exclude = "users")
 public class Role {
 
     @Id

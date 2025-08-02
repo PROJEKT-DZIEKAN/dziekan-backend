@@ -21,19 +21,6 @@ public class UserController {
     private final UserRepository userRepository;
     private final JWTService jwtService;
 
-    // ------------------------ QR LOGIN (po userId) ------------------------
-
-//    @PostMapping("/auth/qr-login") //endpoint ktory umozliwi po zeskanowaniu kodu qr zalogowac sie uzytkownikowi i otrzyma access token oraz refresh
-//    public ResponseEntity<?> qrLogin(@RequestBody QrLoginRequest request) {
-//        Optional<User> userOpt = userRepository.findById(request.userId());
-//        if (userOpt.isEmpty()) {
-//            return ResponseEntity.status(401).body("Invalid user ID");
-//        }
-//        User user = userOpt.get();
-//        String access  = jwtService.generateAccessToken(user);
-//        String refresh = jwtService.generateRefreshToken(user);
-//        return ResponseEntity.ok(new TokenResponse(access, refresh));
-//    }
 
     @PostMapping("/auth/register-by-name")
     public ResponseEntity<?> registerByName(@RequestBody RegisterRequest request) {
