@@ -30,5 +30,6 @@ public class Survey {
 
     @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
+    @JsonIgnore
     private List<SurveyQuestion> questions = new ArrayList<>();
 }
