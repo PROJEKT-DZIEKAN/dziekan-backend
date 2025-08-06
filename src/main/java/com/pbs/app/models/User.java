@@ -1,5 +1,6 @@
 package com.pbs.app.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import com.pbs.app.enums.RegistrationStatus;
@@ -42,6 +43,7 @@ public class User {
     private String userID;
 
     @Column(name = "password")
+    @JsonIgnore
     private String password;
 
     @Column(name = "photo_path")

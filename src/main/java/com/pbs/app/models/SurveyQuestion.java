@@ -1,5 +1,6 @@
 package com.pbs.app.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pbs.app.enums.QuestionType;
 import jakarta.persistence.*;
 import lombok.*;
