@@ -23,6 +23,10 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public boolean existsByUserID(String UserID) {
+        return userRepository.existsByUserID(UserID);
+    }
+
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }

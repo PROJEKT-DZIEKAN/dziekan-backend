@@ -50,7 +50,8 @@ protected boolean shouldNotFilter(HttpServletRequest request) throws ServletExce
            path.equals("/api/refresh-token") ||
            path.startsWith("/swagger-ui") ||
           path.startsWith("/swagger-ui/index.html") ||
-           path.startsWith("/v3/api-docs");
+           path.startsWith("/v3/api-docs") ||
+              path.startsWith("/external-api/");
 }
 
 }

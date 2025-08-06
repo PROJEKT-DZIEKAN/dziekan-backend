@@ -38,7 +38,8 @@ public class SecurityConfig {
               "/swagger-ui.html",
                 "/swagger-ui/index.html",
                 "/api/qr/**",
-              "/v3/api-docs/**"
+              "/v3/api-docs/**",
+                    "/external-api/**"
             ).permitAll()
             .requestMatchers("/ws-chat/**").permitAll()
             .anyRequest().authenticated()

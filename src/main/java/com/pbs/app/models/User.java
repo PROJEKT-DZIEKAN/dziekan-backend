@@ -25,6 +25,28 @@ public class User {
     @Column(name = "surname", nullable = false)
     private String surname;
 
+    // Nowe pola zgodne z dokumentacją mgr Kątka
+    @Column(name = "position")
+    private String position;
+
+    @Column(name = "university")
+    private String university;
+
+    @Column(name = "department")
+    private String department;
+
+    @Column(name = "email")
+    private String email;
+
+    @Column(name = "user_id", unique = true)
+    private String userID;
+
+    @Column(name = "password")
+    private String password;
+
+    @Column(name = "photo_path")
+    private String photoPath; // Ścieżka do zdjęcia
+
     @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(name = "registration_status", nullable = false)
