@@ -54,6 +54,7 @@ public class User {
     private RegistrationStatus registrationStatus = RegistrationStatus.NotRegistered;
 
     @OneToMany(mappedBy = "participant", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<EventRegistration> eventRegistrations = new ArrayList<>();
 
     @ManyToMany
@@ -76,5 +77,6 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
+    @JsonIgnore
     private List<SurveyUserAnswer> surveyUserAnswers = new ArrayList<>();
 }
