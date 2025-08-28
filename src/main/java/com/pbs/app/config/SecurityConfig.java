@@ -42,6 +42,7 @@ public class SecurityConfig {
                     "/external-api/**"
             ).permitAll()
             .requestMatchers("/ws-chat/**").permitAll()
+            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
             .anyRequest().authenticated()
           )
           .httpBasic(bb -> bb.disable())
