@@ -145,6 +145,25 @@ public class SurveyService {
         surveyRepo.delete(existing);
     }
 
+    public void submitUserAnswers(Long userId, Long surveyId, List<AnswerRequest> answers) {
+        List<SurveyUserAnswer> userAnswers = new ArrayList<>();
+
+        for (AnswerRequest a : answers) {
+            for (Long optionId : a.getSelectedOptionIds()) {
+                SurveyUserAnswer answer = SurveyUserAnswer.builder()
+                        .userId(userId)
+                        .questionId(a.getQuestionId())
+                        .surveyOptionId(optionId)
+                        .answeredAt(Instant.now())
+                        .build();
+                userAnswers.add(answer);
+            }
+        }
+
+        answerRepo.saveAll(userAnswers);
+    }
+
+
 //    public SurveyQuestion addQuestion(Long surveyId, SurveyQuestion question) {
 //        Survey survey = getSurvey(surveyId);
 //        question.setSurvey(survey);

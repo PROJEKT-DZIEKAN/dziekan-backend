@@ -1,12 +1,10 @@
 package com.pbs.app.controllers;
 
-import com.pbs.app.dto.OptionResponse;
-import com.pbs.app.dto.QuestionResponse;
-import com.pbs.app.dto.SurveyRequest;
-import com.pbs.app.dto.SurveyResponse;
+import com.pbs.app.dto.*;
 import com.pbs.app.models.*;
 import com.pbs.app.services.SurveyService;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -79,6 +77,20 @@ public class SurveyController {
         surveyService.deleteSurvey(surveyId);
         return ResponseEntity.noContent().build();
     }
+
+    //user answers
+
+    @PostMapping("/{surveyId}/answers")
+    public ResponseEntity<Void> submitAnswers(
+            @PathVariable Long surveyId,
+            @RequestParam Long userId,
+            @RequestBody List<AnswerRequest> answers
+    ) {
+        surveyService.submitUserAnswers(userId, surveyId, answers);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+
 //te nizej nie sprawdzone nie wszystkie tez sa potrzebne to do ustalenia
 
     @GetMapping("/{surveyId}/questions")
