@@ -79,7 +79,7 @@ public class SurveyController {
         surveyService.deleteSurvey(surveyId);
         return ResponseEntity.noContent().build();
     }
-
+//te nizej nie sprawdzone nie wszystkie tez sa potrzebne to do ustalenia
 
     @GetMapping("/{surveyId}/questions")
     public ResponseEntity<List<SurveyQuestion>> getQuestionsBySurvey(@PathVariable Long surveyId) {
