@@ -40,7 +40,9 @@ public class SecurityConfig {
                 "/swagger-ui/index.html",
                 "/api/qr/**",
               "/v3/api-docs/**",
-                    "/external-api/**"
+                    "/external-api/**",
+                    "/swagger-ui/**"
+
             ).permitAll()
             .requestMatchers("/ws-chat/**").permitAll()
             .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
