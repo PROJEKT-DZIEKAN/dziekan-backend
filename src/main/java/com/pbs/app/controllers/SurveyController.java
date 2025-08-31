@@ -1,5 +1,7 @@
 package com.pbs.app.controllers;
 
+import com.pbs.app.dto.OptionResponse;
+import com.pbs.app.dto.QuestionResponse;
 import com.pbs.app.dto.SurveyRequest;
 import com.pbs.app.dto.SurveyResponse;
 import com.pbs.app.models.*;
@@ -36,13 +38,41 @@ public class SurveyController {
         return ResponseEntity.ok(surveyService.getSurvey(surveyId));
     }
 
-//    @PutMapping("/{surveyId}")
-//    public ResponseEntity<Survey> updateSurvey(
-//            @PathVariable Long surveyId,
-//            @RequestBody Survey survey
-//    ) {
-//        return ResponseEntity.ok(surveyService.updateSurvey(surveyId, survey));
-//    }
+    @PutMapping("/{surveyId}")
+    public ResponseEntity<SurveyResponse> updateSurvey(
+            @PathVariable Long surveyId,
+            @RequestBody SurveyRequest surveyRequest
+    ) {
+        Survey updated = surveyService.updateSurvey(surveyId, surveyRequest);
+
+        SurveyResponse response = new SurveyResponse();
+        response.setId(updated.getId());
+        response.setTitle(updated.getTitle());
+        response.setDescription(updated.getDescription());
+        response.setCreatedAt(updated.getCreatedAt());
+
+        List<QuestionResponse> questions = updated.getQuestions().stream().map(q -> {
+            QuestionResponse qr = new QuestionResponse();
+            qr.setId(q.getId());
+            qr.setText(q.getText());
+            qr.setType(q.getType());
+
+            List<OptionResponse> options = q.getSurveyOptions().stream().map(o -> {
+                OptionResponse or = new OptionResponse();
+                or.setId(o.getId());
+                or.setText(o.getText());
+                return or;
+            }).toList();
+
+            qr.setSurveyOptions(options);
+            return qr;
+        }).toList();
+
+        response.setQuestions(questions);
+
+        return ResponseEntity.ok(response);
+    }
+
 
     @DeleteMapping("/{surveyId}")
     public ResponseEntity<Void> deleteSurvey(@PathVariable Long surveyId) {
@@ -50,14 +80,6 @@ public class SurveyController {
         return ResponseEntity.noContent().build();
     }
 
-//    @PostMapping("/{surveyId}/questions")
-//    public ResponseEntity<SurveyQuestion> addQuestion(
-//            @PathVariable Long surveyId,
-//            @RequestBody SurveyQuestion question
-//    ) {
-//        SurveyQuestion created = surveyService.addQuestion(surveyId, question);
-//        return ResponseEntity.ok(created);
-//    }
 
     @GetMapping("/{surveyId}/questions")
     public ResponseEntity<List<SurveyQuestion>> getQuestionsBySurvey(@PathVariable Long surveyId) {

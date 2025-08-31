@@ -7,6 +7,7 @@ import java.util.List;
 
 @Data
 public class QuestionRequest {
+    private Long id;
     private String text;
     private QuestionType type;
     private List<OptionRequest> surveyOptions;

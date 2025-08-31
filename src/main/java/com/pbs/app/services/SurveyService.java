@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.EntityNotFoundException;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -57,6 +58,10 @@ public class SurveyService {
 
         return surveyRepo.save(survey);
     }
+    public Survey getSingleSurveyEntity(Long surveyId) {
+        return surveyRepo.findById(surveyId)
+                .orElseThrow(() -> new EntityNotFoundException("Survey not found: " + surveyId));
+    }
 
     public SurveyResponse getSurvey(Long surveyId) {
         Survey survey = surveyRepo.findById(surveyId)
@@ -93,18 +98,51 @@ public class SurveyService {
         return surveyRepo.findAll();
     }
 
-//    public Survey updateSurvey(Long surveyId, Survey updated) {
-//        Survey existing = getSurvey(surveyId);
-//        existing.setTitle(updated.getTitle());
-//        existing.setDescription(updated.getDescription());
-//        return surveyRepo.save(existing);
-//    }
+    public Survey updateSurvey(Long surveyId, SurveyRequest req) {
+
+        Survey existing = surveyRepo.findById(surveyId)
+                .orElseThrow(() -> new EntityNotFoundException("Survey not found: " + surveyId));
+
+        existing.setTitle(req.getTitle());
+        existing.setDescription(req.getDescription());
+
+        List<SurveyQuestion> updatedQuestions = new ArrayList<>();
+
+        if (req.getQuestions() != null) {
+            for (QuestionRequest qReq : req.getQuestions()) {
+                SurveyQuestion q = new SurveyQuestion();
+                q.setText(qReq.getText());
+                q.setType(qReq.getType());
+                q.setSurvey(existing);
+
+                if (qReq.getSurveyOptions() != null) {
+                    List<SurveyOption> updatedOptions = new ArrayList<>();
+                    for (OptionRequest oReq : qReq.getSurveyOptions()) {
+                        SurveyOption o = new SurveyOption();
+                        o.setText(oReq.getText());
+                        o.setQuestion(q);
+                        updatedOptions.add(o);
+                    }
+                    q.getSurveyOptions().clear();
+                    q.getSurveyOptions().addAll(updatedOptions);
+                }
+
+                updatedQuestions.add(q);
+            }
+        }
+
+        existing.getQuestions().clear();
+        existing.getQuestions().addAll(updatedQuestions);
+
+        return surveyRepo.save(existing);
+    }
+
 
     public void deleteSurvey(Long surveyId) {
-        if (!surveyRepo.existsById(surveyId)) {
-            throw new EntityNotFoundException("Survey not found: " + surveyId);
-        }
-        surveyRepo.deleteById(surveyId);
+        Survey existing = surveyRepo.findById(surveyId)
+                .orElseThrow(() -> new EntityNotFoundException("Survey not found: " + surveyId));
+
+        surveyRepo.delete(existing);
     }
 
 //    public SurveyQuestion addQuestion(Long surveyId, SurveyQuestion question) {
