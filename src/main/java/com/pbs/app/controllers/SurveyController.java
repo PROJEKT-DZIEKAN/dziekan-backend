@@ -1,6 +1,7 @@
 package com.pbs.app.controllers;
 
 import com.pbs.app.dto.SurveyRequest;
+import com.pbs.app.dto.SurveyResponse;
 import com.pbs.app.models.*;
 import com.pbs.app.services.SurveyService;
 
@@ -31,17 +32,17 @@ public class SurveyController {
     }
 
     @GetMapping("/{surveyId}")
-    public ResponseEntity<Survey> getSurvey(@PathVariable Long surveyId) {
+    public ResponseEntity<SurveyResponse> getSurvey(@PathVariable Long surveyId) {
         return ResponseEntity.ok(surveyService.getSurvey(surveyId));
     }
 
-    @PutMapping("/{surveyId}")
-    public ResponseEntity<Survey> updateSurvey(
-            @PathVariable Long surveyId,
-            @RequestBody Survey survey
-    ) {
-        return ResponseEntity.ok(surveyService.updateSurvey(surveyId, survey));
-    }
+//    @PutMapping("/{surveyId}")
+//    public ResponseEntity<Survey> updateSurvey(
+//            @PathVariable Long surveyId,
+//            @RequestBody Survey survey
+//    ) {
+//        return ResponseEntity.ok(surveyService.updateSurvey(surveyId, survey));
+//    }
 
     @DeleteMapping("/{surveyId}")
     public ResponseEntity<Void> deleteSurvey(@PathVariable Long surveyId) {
@@ -49,14 +50,14 @@ public class SurveyController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{surveyId}/questions")
-    public ResponseEntity<SurveyQuestion> addQuestion(
-            @PathVariable Long surveyId,
-            @RequestBody SurveyQuestion question
-    ) {
-        SurveyQuestion created = surveyService.addQuestion(surveyId, question);
-        return ResponseEntity.ok(created);
-    }
+//    @PostMapping("/{surveyId}/questions")
+//    public ResponseEntity<SurveyQuestion> addQuestion(
+//            @PathVariable Long surveyId,
+//            @RequestBody SurveyQuestion question
+//    ) {
+//        SurveyQuestion created = surveyService.addQuestion(surveyId, question);
+//        return ResponseEntity.ok(created);
+//    }
 
     @GetMapping("/{surveyId}/questions")
     public ResponseEntity<List<SurveyQuestion>> getQuestionsBySurvey(@PathVariable Long surveyId) {

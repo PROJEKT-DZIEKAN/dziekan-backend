@@ -1,8 +1,6 @@
 package com.pbs.app.services;
 
-import com.pbs.app.dto.OptionRequest;
-import com.pbs.app.dto.QuestionRequest;
-import com.pbs.app.dto.SurveyRequest;
+import com.pbs.app.dto.*;
 import com.pbs.app.models.*;
 import com.pbs.app.models.SurveyUserAnswerId;
 import com.pbs.app.repositories.*;
@@ -60,21 +58,47 @@ public class SurveyService {
         return surveyRepo.save(survey);
     }
 
-    public Survey getSurvey(Long surveyId) {
-        return surveyRepo.findById(surveyId)
-            .orElseThrow(() -> new EntityNotFoundException("Survey not found: " + surveyId));
+    public SurveyResponse getSurvey(Long surveyId) {
+        Survey survey = surveyRepo.findById(surveyId)
+                .orElseThrow(() -> new EntityNotFoundException("Survey not found: " + surveyId));
+
+        SurveyResponse response = new SurveyResponse();
+        response.setId(survey.getId());
+        response.setTitle(survey.getTitle());
+        response.setDescription(survey.getDescription());
+        response.setCreatedAt(survey.getCreatedAt());
+
+        List<QuestionResponse> questions = survey.getQuestions().stream().map(q -> {
+            QuestionResponse qr = new QuestionResponse();
+            qr.setId(q.getId());
+            qr.setText(q.getText());
+            qr.setType(q.getType());
+
+            List<OptionResponse> options = q.getSurveyOptions().stream().map(o -> {
+                OptionResponse or = new OptionResponse();
+                or.setId(o.getId());
+                or.setText(o.getText());
+                return or;
+            }).toList();
+
+            qr.setSurveyOptions(options);
+            return qr;
+        }).toList();
+
+        response.setQuestions(questions);
+        return response;
     }
 
     public List<Survey> getAllSurveys() {
         return surveyRepo.findAll();
     }
 
-    public Survey updateSurvey(Long surveyId, Survey updated) {
-        Survey existing = getSurvey(surveyId);
-        existing.setTitle(updated.getTitle());
-        existing.setDescription(updated.getDescription());
-        return surveyRepo.save(existing);
-    }
+//    public Survey updateSurvey(Long surveyId, Survey updated) {
+//        Survey existing = getSurvey(surveyId);
+//        existing.setTitle(updated.getTitle());
+//        existing.setDescription(updated.getDescription());
+//        return surveyRepo.save(existing);
+//    }
 
     public void deleteSurvey(Long surveyId) {
         if (!surveyRepo.existsById(surveyId)) {
@@ -83,11 +107,11 @@ public class SurveyService {
         surveyRepo.deleteById(surveyId);
     }
 
-    public SurveyQuestion addQuestion(Long surveyId, SurveyQuestion question) {
-        Survey survey = getSurvey(surveyId);
-        question.setSurvey(survey);
-        return questionRepo.save(question);
-    }
+//    public SurveyQuestion addQuestion(Long surveyId, SurveyQuestion question) {
+//        Survey survey = getSurvey(surveyId);
+//        question.setSurvey(survey);
+//        return questionRepo.save(question);
+//    }
 
     public SurveyQuestion getQuestion(Long questionId) {
         return questionRepo.findById(questionId)
