@@ -1,5 +1,6 @@
 package com.pbs.app.controllers;
 
+import com.pbs.app.dto.SurveyRequest;
 import com.pbs.app.models.*;
 import com.pbs.app.services.SurveyService;
 
@@ -19,8 +20,8 @@ public class SurveyController {
     }
 
     @PostMapping
-    public ResponseEntity<Survey> createSurvey(@RequestBody Survey survey) {
-        Survey created = surveyService.createSurvey(survey);
+    public ResponseEntity<Survey> createSurvey(@RequestBody SurveyRequest surveyRequest) {
+        Survey created = surveyService.createSurvey(surveyRequest);
         return ResponseEntity.ok(created);
     }
 

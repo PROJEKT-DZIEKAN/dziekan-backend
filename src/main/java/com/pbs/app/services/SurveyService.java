@@ -1,5 +1,8 @@
 package com.pbs.app.services;
 
+import com.pbs.app.dto.OptionRequest;
+import com.pbs.app.dto.QuestionRequest;
+import com.pbs.app.dto.SurveyRequest;
 import com.pbs.app.models.*;
 import com.pbs.app.models.SurveyUserAnswerId;
 import com.pbs.app.repositories.*;
@@ -29,7 +32,31 @@ public class SurveyService {
         this.answerRepo = answerRepo;
     }
 
-    public Survey createSurvey(Survey survey) {
+    public Survey createSurvey(SurveyRequest req) {
+        Survey survey = new Survey();
+        survey.setTitle(req.getTitle());
+        survey.setDescription(req.getDescription());
+
+        if (req.getQuestions() != null) {
+            for (QuestionRequest qReq : req.getQuestions()) {
+                SurveyQuestion q = new SurveyQuestion();
+                q.setText(qReq.getText());
+                q.setType(qReq.getType());
+                q.setSurvey(survey);
+
+                if (qReq.getSurveyOptions() != null) {
+                    for (OptionRequest oReq : qReq.getSurveyOptions()) {
+                        SurveyOption o = new SurveyOption();
+                        o.setText(oReq.getText());
+                        o.setQuestion(q);
+                        q.getSurveyOptions().add(o);
+                    }
+                }
+
+                survey.getQuestions().add(q);
+            }
+        }
+
         return surveyRepo.save(survey);
     }
 
