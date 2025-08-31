@@ -45,4 +45,30 @@ public class QrCodeService {
 
         return response.getBody();
     }
-}
+
+    public Map<Long, byte[]> generateQrAllUsers() {
+        Map<Long, byte[]> userQrCodes = new HashMap<>();
+
+        for (User user : userRepository.findAll()) {
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("user_id", user.getId());
+            payload.put("first_name", user.getFirstName());
+            payload.put("surname", user.getSurname());
+            payload.put("base_url", appBaseUrl);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            HttpEntity<Map<String, Object>> request = new HttpEntity<>(payload, headers);
+
+            ResponseEntity<byte[]> response = restTemplate.postForEntity(
+                    qrServiceUrl + "/generate_qr_code", request, byte[].class);
+
+            if (response.getBody() != null) {
+                userQrCodes.put(user.getId(), response.getBody());
+            }
+        }
+
+        return userQrCodes;
+    }}
+
