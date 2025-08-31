@@ -8,6 +8,7 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.http.HttpMethod;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -26,23 +27,36 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .cors(Customizer.withDefaults())
-                .csrf(csrf -> csrf.disable())
-                .sessionManagement(sm -> sm
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
-                .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll() // Przepuszcza wszystko
-                )
-                .httpBasic(bb -> bb.disable())
-                .formLogin(fl -> fl.disable());
-        // Usunięto filtr JWT
+          .cors(Customizer.withDefaults())
+          .csrf(csrf -> csrf.disable())
+          .sessionManagement(sm -> sm
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+          )
+          .authorizeHttpRequests(auth -> auth
+            .requestMatchers(
+              "/api/auth/**",
+              "/api/refresh-token",
+              "/swagger-ui.html",
+                "/swagger-ui/index.html",
+                "/api/qr/**",
+              "/v3/api-docs/**",
+                    "/external-api/**"
+            ).permitAll()
+            .requestMatchers("/ws-chat/**").permitAll()
+            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+            .anyRequest().authenticated()
+          )
+          .httpBasic(bb -> bb.disable())
+          .formLogin(fl -> fl.disable())
+          .addFilterBefore(jwtAuthFilter,
+                           org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource(@Value("${allowed.origins}") String originsRaw) {
+
         CorsConfiguration cfg = new CorsConfiguration();
         List<String> allowedOrigins = List.of(originsRaw.split(","));
         cfg.setAllowedOriginPatterns(allowedOrigins);
@@ -55,4 +69,6 @@ public class SecurityConfig {
         src.registerCorsConfiguration("/**", cfg);
         return src;
     }
+
+
 }
