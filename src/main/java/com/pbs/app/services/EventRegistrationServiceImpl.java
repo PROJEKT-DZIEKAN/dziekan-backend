@@ -76,4 +76,10 @@ public class EventRegistrationServiceImpl implements EventRegistrationService {
     public void updateRegistrationStatus(Long id, RegistrationStatus status) {
         eventRegistrationRepository.updateStatusById(id, status);
     }
-}
+
+    @Override
+    @Transactional
+    public List<EventRegistration> createManyRegistrations(List<EventRegistration> registrations) {
+        registrations.forEach(reg -> reg.setId(null)); // Ensure IDs are null to use the generator
+        return eventRegistrationRepository.saveAll(registrations);
+}}

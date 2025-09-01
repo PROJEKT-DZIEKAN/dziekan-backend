@@ -2,6 +2,7 @@ package com.pbs.app.controllers;
 
 import com.pbs.app.models.EventRegistration;
 import com.pbs.app.services.EventRegistrationService;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,16 @@ public class EventRegistrationController {
     public ResponseEntity<EventRegistration>  createRegistration(@Valid @RequestBody EventRegistration eventRegistration) {
         EventRegistration createdRegistration = eventRegistrationService.createRegistration(eventRegistration);
         return ResponseEntity.ok(createdRegistration);
+    }
+
+    @PostMapping("/register-batch")
+    public ResponseEntity<List<EventRegistration>> createRegistrationsBatch(@Valid @RequestBody List<EventRegistration> registrations) {
+        try {
+            List<EventRegistration> createdRegistrations = eventRegistrationService.createManyRegistrations(registrations);
+            return ResponseEntity.ok(createdRegistrations);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @DeleteMapping("/delete")
