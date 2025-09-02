@@ -1,5 +1,6 @@
 package com.pbs.app.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.pbs.app.enums.RegistrationStatus;
 import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.persistence.*;
@@ -23,11 +24,13 @@ public class EventRegistration {
     @Hidden
     @ManyToOne
     @JoinColumn(name = "event_id", nullable = false)
+    @JsonBackReference("event-registrations")
     private Event event;
-
+    
     @Hidden
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference("user-registrations")
     private User participant;
 
     @Column(nullable = false)
@@ -39,12 +42,4 @@ public class EventRegistration {
 
     @Column
     private LocalDateTime statusUpdatedAt;
-
-//    // Metoda do aktualizacji statusu
-//    public void updateStatus(RegistrationStatus newStatus) {
-//        this.status = newStatus;
-//        this.statusUpdatedAt = LocalDateTime.now();
-//    }
-//
-
 }

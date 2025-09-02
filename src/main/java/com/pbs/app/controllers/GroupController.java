@@ -75,19 +75,6 @@ public class GroupController {
         }
     }
 
-    @GetMapping("/by-user/{userId}")
-    public ResponseEntity<List<Group>> getGroupsByUserId(@PathVariable Long userId) {
-        try {
-            User user = userService.getUserById(userId)
-                    .orElseThrow(() -> new RuntimeException("User not found"));
-            List<Group> groups = groupService.findByParticipant(user);
-            return ResponseEntity.ok(groups);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
-    }
 
     @GetMapping("/created-at")
     public ResponseEntity<List<Group>> getGroupsCreatedAt(@RequestParam LocalDateTime dateTime) {
@@ -101,19 +88,6 @@ public class GroupController {
         }
     }
 
-    @GetMapping("/by-organizer/{organizerId}")
-    public ResponseEntity<List<Group>> getGroupsByOrganizerId(@PathVariable Long organizerId) {
-        try {
-            User organizer = userService.getUserById(organizerId)
-                    .orElseThrow(() -> new RuntimeException("User not found"));
-            List<Group> groups = groupService.findByOrganizer(organizer);
-            return ResponseEntity.ok(groups);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
-    }
 
     @PostMapping("/add-participant/{groupId}/{userId}")
     public ResponseEntity<Void> addParticipantToGroup(@PathVariable Long groupId, @PathVariable Long userId) {

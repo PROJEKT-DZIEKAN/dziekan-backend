@@ -1,4 +1,6 @@
 package com.pbs.app.models;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -44,13 +46,16 @@ public class Event {
     @Schema(hidden = true)
     @ManyToOne
     @JoinColumn(name = "organizer_id", nullable = true)
+    @JsonIgnore
     private User organizer;
 
     @Schema(hidden = true)
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<EventRegistration> registrations = new ArrayList<>();
 
     @ManyToMany(mappedBy = "events")
     @Builder.Default
+    @JsonIgnore
     private Set<Group> groups = new HashSet<>();
 }

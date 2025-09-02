@@ -9,11 +9,11 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface GroupRepository extends JpaRepository<Group, Long> {
-    List<Group> findByOrganizer(User organizer);
-    List<Group> findByParticipants(User user);
+    List<Group> findByParticipants(Set<User> participants);
     List<Group> findByDescriptionContainingIgnoreCase(String description);
     List<Group> findByNameContainingIgnoreCase(String keyword);
     List<Group> findByCreatedAt(LocalDateTime createdAt);

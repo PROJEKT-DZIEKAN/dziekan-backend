@@ -1,6 +1,7 @@
 package com.pbs.app.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import com.pbs.app.enums.RegistrationStatus;
@@ -26,7 +27,6 @@ public class User {
     @Column(name = "surname", nullable = false)
     private String surname;
 
-    // Nowe pola zgodne z dokumentacją mgr Kątka
     @Column(name = "position")
     private String position;
 
@@ -47,7 +47,7 @@ public class User {
     private String password;
 
     @Column(name = "photo_path")
-    private String photoPath; // Ścieżka do zdjęcia
+    private String photoPath;
 
     @Builder.Default
     @Enumerated(EnumType.STRING)
@@ -56,7 +56,7 @@ public class User {
     private RegistrationStatus registrationStatus = RegistrationStatus.NotRegistered;
 
     @OneToMany(mappedBy = "participant", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
+    @JsonManagedReference("user-registrations")
     private List<EventRegistration> eventRegistrations = new ArrayList<>();
 
     @ManyToMany
@@ -66,6 +66,7 @@ public class User {
         inverseJoinColumns = @JoinColumn(name = "group_id")
     )
     @Builder.Default
+    @JsonManagedReference("user-groups")
     private Set<Group> groups = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.EAGER)

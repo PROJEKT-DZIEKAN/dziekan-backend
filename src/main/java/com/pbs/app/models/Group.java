@@ -1,5 +1,5 @@
 package com.pbs.app.models;
-import io.swagger.v3.oas.annotations.media.Schema;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -17,9 +17,6 @@ public class Group {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    @Version
-//    private Long version;
-
     @Column(nullable = false) @Size(max = 255)
     private String name;
 
@@ -32,11 +29,6 @@ public class Group {
     @Min(0) @Column
     private Integer maxParticipants;
 
-    @Schema(hidden = true)
-    @ManyToOne
-    @JoinColumn(name = "organizer_id")
-    private User organizer;
-
     @ManyToMany(mappedBy = "groups")
     @Builder.Default
     private Set<User> participants = new HashSet<>();
@@ -48,5 +40,6 @@ public class Group {
       inverseJoinColumns = @JoinColumn(name = "event_id")
     )
     @Builder.Default
+    @JsonIgnore
     private Set<Event> events = new HashSet<>();
 }

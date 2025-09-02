@@ -12,7 +12,6 @@ import java.util.List;
 
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long> {
-    List<Event> findByOrganizer(User organizer);
 
     List<Event> findByStartTime(LocalDateTime dateTime);
     
