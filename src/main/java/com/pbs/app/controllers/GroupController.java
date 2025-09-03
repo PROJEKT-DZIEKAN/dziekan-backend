@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -20,7 +21,7 @@ public class GroupController {
     private final UserService userService;
 
     @PostMapping("/create")
-    public ResponseEntity<Group> createGroup(@Valid @RequestBody Group group) {
+    public ResponseEntity<Group> createGroup(@RequestBody Group group) {
         try {
             Group createdGroup = groupService.createGroup(group);
             return ResponseEntity.ok(createdGroup);
@@ -69,6 +70,11 @@ public class GroupController {
     public ResponseEntity<List<Group>> getAllGroups() {
         try {
             List<Group> groups = groupService.getAllGroups();
+
+            if (groups == null) {
+                groups = new ArrayList<>();
+            }
+
             return ResponseEntity.ok(groups);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();

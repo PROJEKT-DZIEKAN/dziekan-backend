@@ -24,8 +24,8 @@ public class Group {
     @Column @Size(max = 2000)
     private String description;
 
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
+    @Column(nullable = true)
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     @Min(0) @Column
     private Integer maxParticipants;
