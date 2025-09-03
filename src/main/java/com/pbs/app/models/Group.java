@@ -1,5 +1,6 @@
 package com.pbs.app.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -31,6 +32,7 @@ public class Group {
 
     @ManyToMany(mappedBy = "groups")
     @Builder.Default
+    @JsonIgnore
     private Set<User> participants = new HashSet<>();
 
     @ManyToMany
@@ -40,6 +42,7 @@ public class Group {
       inverseJoinColumns = @JoinColumn(name = "event_id")
     )
     @Builder.Default
+    @JsonIgnore
     @JsonIgnore
     private Set<Event> events = new HashSet<>();
 }
