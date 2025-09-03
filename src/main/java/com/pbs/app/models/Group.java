@@ -43,6 +43,5 @@ public class Group {
     )
     @Builder.Default
     @JsonIgnore
-    @JsonIgnore
     private Set<Event> events = new HashSet<>();
 }
