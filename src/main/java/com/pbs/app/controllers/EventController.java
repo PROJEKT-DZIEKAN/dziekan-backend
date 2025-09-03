@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -143,5 +144,64 @@ public class EventController {
     public ResponseEntity<Integer> getAvailableSpots(@PathVariable Long eventId) {
         Integer spots = eventService.getAvailableSpots(eventId);
         return ResponseEntity.ok(spots);
+    }
+    // NICOLAS LEAVE MY BELOVED CONTROLLERS ALONE PLEASE
+    @GetMapping("/between")
+    public ResponseEntity<List<Event>> getEventsBetween(
+            @RequestParam LocalDateTime start,
+            @RequestParam LocalDateTime end) {
+        List<Event> events = eventService.getEventsStartTimeBetween(start, end);
+        return ResponseEntity.ok(events);
+    }
+
+    @GetMapping("/by-start-time")
+    public ResponseEntity<List<Event>> getEventsByStartTime(
+            @RequestParam LocalDateTime startTime) {
+        List<Event> events = eventService.findByStartTime(startTime);
+        return ResponseEntity.ok(events);
+    }
+
+    @GetMapping("/by-end-time")
+    public ResponseEntity<List<Event>> getEventsByEndTime(
+            @RequestParam LocalDateTime endTime) {
+        List<Event> events = eventService.findByEndTime(endTime);
+        return ResponseEntity.ok(events);
+    }
+
+    @GetMapping("/upcoming")
+    public ResponseEntity<List<Event>> getUpcomingEvents(
+            @RequestParam(required = false) LocalDateTime now) {
+        if (now == null) {
+            now = LocalDateTime.now();
+        }
+        List<Event> events = eventService.findUpcomingEvents(now);
+        return ResponseEntity.ok(events);
+    }
+
+    @GetMapping("/by-title")
+    public ResponseEntity<List<Event>> getEventsByTitle(
+            @RequestParam String keyword) {
+        List<Event> events = eventService.findByTitleContainingIgnoreCase(keyword);
+        return ResponseEntity.ok(events);
+    }
+
+    @GetMapping("/by-location")
+    public ResponseEntity<List<Event>> getEventsByLocation(
+            @RequestParam String location) {
+        List<Event> events = eventService.findByLocationContainingIgnoreCase(location);
+        return ResponseEntity.ok(events);
+    }
+
+    @GetMapping("/by-description")
+    public ResponseEntity<List<Event>> getEventsByDescription(
+            @RequestParam String description) {
+        List<Event> events = eventService.findByDescriptionContainingIgnoreCase(description);
+        return ResponseEntity.ok(events);
+    }
+
+    @GetMapping("/with-available-spots")
+    public ResponseEntity<List<Event>> getEventsWithAvailableSpots() {
+        List<Event> events = eventService.findEventsWithAvailableSpots();
+        return ResponseEntity.ok(events);
     }
 }

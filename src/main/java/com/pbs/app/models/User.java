@@ -66,7 +66,7 @@ public class User {
         inverseJoinColumns = @JoinColumn(name = "group_id")
     )
     @Builder.Default
-    @JsonManagedReference("user-groups")
+    @JsonIgnore
     private Set<Group> groups = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.EAGER)

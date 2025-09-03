@@ -1,17 +1,22 @@
 package com.pbs.app.controllers;
 
+import com.pbs.app.models.Event;
 import com.pbs.app.models.Group;
 import com.pbs.app.models.User;
+import com.pbs.app.services.EventService;
 import com.pbs.app.services.GroupService;
 import com.pbs.app.services.UserService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/groups")
@@ -19,39 +24,24 @@ import java.util.List;
 public class GroupController {
     private final GroupService groupService;
     private final UserService userService;
+    private final EventService eventService;
 
     @PostMapping("/create")
     public ResponseEntity<Group> createGroup(@RequestBody Group group) {
-        try {
             Group createdGroup = groupService.createGroup(group);
-            return ResponseEntity.ok(createdGroup);
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdGroup);
     }
 
     @PutMapping("/update/{id}")
     public ResponseEntity<Group> updateGroup(@PathVariable Long id, @Valid @RequestBody Group group) {
-        try {
-            Group updatedGroup = groupService.updateGroup(id, group);
-            return ResponseEntity.ok(updatedGroup);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
+        Group updatedGroup = groupService.updateGroup(id, group);
+        return ResponseEntity.ok(updatedGroup);
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteGroup(@PathVariable Long id) {
-        try {
-            groupService.deleteGroup(id);
-            return ResponseEntity.noContent().build();
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
+        groupService.deleteGroup(id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}")
@@ -74,7 +64,6 @@ public class GroupController {
             if (groups == null) {
                 groups = new ArrayList<>();
             }
-
             return ResponseEntity.ok(groups);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
@@ -103,6 +92,82 @@ public class GroupController {
             groupService.addParticipantToGroup(groupId, user);
             return ResponseEntity.ok().build();
         } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PostMapping("/add-participants/{groupId}")
+    public ResponseEntity<List<String>> addParticipantsToGroup(@PathVariable Long groupId, @RequestBody Set<User> participants) {
+        try {
+            List<String> results = groupService.addParticipantsToGroup(groupId, participants);
+            return ResponseEntity.ok(results);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (IllegalStateException e) {
+            return ResponseEntity.badRequest().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @DeleteMapping("/remove-participants/{groupId}")
+    public ResponseEntity<List<String>> removeParticipantsFromGroup(@PathVariable Long groupId, @RequestBody Set<User> participants) {
+        try {
+            List<String> results = groupService.removeParticipantsFromGroup(groupId, participants);
+            return ResponseEntity.ok(results);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PostMapping("/add-events/{groupId}")
+    public ResponseEntity<List<String>> addEventsToGroup(@PathVariable Long groupId, @RequestBody Set<Event> events) {
+        try {
+            List<String> results = groupService.addEventsToGroup(groupId, events);
+            return ResponseEntity.ok(results);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @DeleteMapping("/remove-events/{groupId}")
+    public ResponseEntity<List<String>> removeEventsFromGroup(@PathVariable Long groupId, @RequestBody Set<Event> events) {
+        try {
+            List<String> results = groupService.removeEventsFromGroup(groupId, events);
+            return ResponseEntity.ok(results);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PostMapping("/add-event/{groupId}/{eventId}")
+    public ResponseEntity<Void> addEventToGroup(@PathVariable Long groupId, @PathVariable Long eventId) {
+        try {
+            Event event = eventService.getEventById(eventId);
+            groupService.addEventToGroup(groupId, event);
+            return ResponseEntity.ok().build();
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @DeleteMapping("/remove-event/{groupId}/{eventId}")
+    public ResponseEntity<Void> removeEventFromGroup(@PathVariable Long groupId, @PathVariable Long eventId) {
+        try {
+            Event event = eventService.getEventById(eventId);
+            groupService.removeEventFromGroup(groupId, event);
+            return ResponseEntity.ok().build();
+        } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
