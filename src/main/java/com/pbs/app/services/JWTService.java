@@ -48,6 +48,7 @@ public class JWTService {
                    .claim("surname",   user.getSurname())
                    .claim("status",    user.getRegistrationStatus().name())
                    .claim("role",      roleNames)
+                   .claim("university", user.getUniversity())
                    .setIssuedAt(new Date(now))
                    .setExpiration(new Date(now + ACCESS_TOKEN_EXPIRATION))
                    .signWith(signingKey, SignatureAlgorithm.HS256)

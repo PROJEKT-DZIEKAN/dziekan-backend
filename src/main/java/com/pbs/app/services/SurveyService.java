@@ -11,6 +11,7 @@ import jakarta.persistence.EntityNotFoundException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -20,15 +21,22 @@ public class SurveyService {
     private final SurveyQuestionRepository questionRepo;
     private final SurveyOptionRepository optionRepo;
     private final SurveyUserAnswerRepository answerRepo;
+    private final UserCompletedSurveyRepository completedSurveyRepository;
+    private final UserRepository userRepository;
 
     public SurveyService(SurveyRepository surveyRepo,
                          SurveyQuestionRepository questionRepo,
                          SurveyOptionRepository optionRepo,
-                         SurveyUserAnswerRepository answerRepo) {
+                         SurveyUserAnswerRepository answerRepo,
+                         UserCompletedSurveyRepository completedSurveyRepository,
+                            UserRepository userRepository
+    ) {
         this.surveyRepo = surveyRepo;
         this.questionRepo = questionRepo;
         this.optionRepo = optionRepo;
         this.answerRepo = answerRepo;
+        this.completedSurveyRepository = completedSurveyRepository;
+        this.userRepository = userRepository;
     }
 
     public Survey createSurvey(SurveyRequest req) {
@@ -164,12 +172,6 @@ public class SurveyService {
     }
 
 
-//    public SurveyQuestion addQuestion(Long surveyId, SurveyQuestion question) {
-//        Survey survey = getSurvey(surveyId);
-//        question.setSurvey(survey);
-//        return questionRepo.save(question);
-//    }
-
     public SurveyQuestion getQuestion(Long questionId) {
         return questionRepo.findById(questionId)
             .orElseThrow(() -> new EntityNotFoundException("Question not found: " + questionId));
@@ -243,6 +245,34 @@ public class SurveyService {
 
     public List<SurveyUserAnswer> getAnswersByQuestion(Long questionId) {
         return answerRepo.findByQuestionId(questionId);
+    }
+
+    public List<Survey> getAvailableSurveysForUser(Long userId) {
+        return surveyRepo.findAvailableSurveysForUser(userId);
+    }
+
+    @Transactional
+    public void markSurveyAsCompleted(Long userId, Long surveyId) {
+        if (completedSurveyRepository.existsByUserIdAndSurveyId(userId, surveyId)) {
+            return;
+        }
+
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        Survey survey = surveyRepo.findById(surveyId)
+            .orElseThrow(() -> new IllegalArgumentException("Survey not found"));
+
+        UserCompletedSurvey completed = UserCompletedSurvey.builder()
+            .user(user)
+            .survey(survey)
+            .build();
+
+        completedSurveyRepository.save(completed);
+    }
+
+    public boolean isSurveyCompletedByUser(Long userId, Long surveyId) {
+        return completedSurveyRepository.existsByUserIdAndSurveyId(userId, surveyId);
     }
 
 }

@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/surveys")
@@ -26,9 +27,25 @@ public class SurveyController {
         return ResponseEntity.ok(created);
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<Survey>> getAllSurveys() {
+
         return ResponseEntity.ok(surveyService.getAllSurveys());
+    }
+
+    @GetMapping("/available")
+    public ResponseEntity<List<Survey>> getAllSurveys(@RequestParam Long userId) {
+            return ResponseEntity.ok(surveyService.getAvailableSurveysForUser(userId));
+
+    }
+
+    @PostMapping("/{surveyId}/complete")
+    public ResponseEntity<?> completeSurvey(
+            @PathVariable Long surveyId,
+            @RequestParam Long userId) {
+
+        surveyService.markSurveyAsCompleted(userId, surveyId);
+        return ResponseEntity.ok(Map.of("success", true));
     }
 
     @GetMapping("/{surveyId}")
@@ -87,6 +104,7 @@ public class SurveyController {
             @RequestBody List<AnswerRequest> answers
     ) {
         surveyService.submitUserAnswers(userId, surveyId, answers);
+        surveyService.markSurveyAsCompleted(userId, surveyId);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 

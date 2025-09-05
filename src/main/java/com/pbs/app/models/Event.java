@@ -52,6 +52,7 @@ public class Event {
     @Schema(hidden = true)
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
+    @Builder.Default
     private List<EventRegistration> registrations = new ArrayList<>();
 
     @ManyToMany(mappedBy = "events")

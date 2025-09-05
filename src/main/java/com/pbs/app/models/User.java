@@ -57,6 +57,7 @@ public class User {
 
     @OneToMany(mappedBy = "participant", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("user-registrations")
+    @Builder.Default
     private List<EventRegistration> eventRegistrations = new ArrayList<>();
 
     @ManyToMany
@@ -82,4 +83,13 @@ public class User {
     @Builder.Default
     @JsonIgnore
     private List<SurveyUserAnswer> surveyUserAnswers = new ArrayList<>();
+
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    @JsonIgnore
+    private Set<UserCompletedSurvey> completedSurveys = new HashSet<>();
+
+
+
 }

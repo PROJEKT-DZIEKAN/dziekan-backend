@@ -58,6 +58,45 @@ public ResponseEntity<?> loginByUserId(@PathVariable Long userId) {
     return ResponseEntity.ok(new TokenResponse(access, refresh));
 }
 
+    @PostMapping("/auth/refresh")
+    public ResponseEntity<?> refreshTokens(@RequestBody RefreshTokenRequest request) {
+        try {
+            String refreshToken = request.refreshToken();
+
+            String userId = jwtService.extractUserId(refreshToken);
+
+            if (!jwtService.isTokenValid(refreshToken, userId)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Invalid or expired refresh token");
+            }
+
+            Optional<User> userOpt = userRepository.findById(Long.parseLong(userId));
+            if (userOpt.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("User not found");
+            }
+
+            User user = userOpt.get();
+
+            String newAccessToken = jwtService.generateAccessToken(user);
+            String newRefreshToken = jwtService.generateRefreshToken(user);
+
+            return ResponseEntity.ok(new TokenResponse(newAccessToken, newRefreshToken));
+
+        } catch (ExpiredJwtException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body("Refresh token expired");
+        } catch (JwtException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body("Invalid refresh token");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Error refreshing token");
+        }
+    }
+
+    private record RefreshTokenRequest(String refreshToken) {}
+
     @GetMapping("/users/me")
     public ResponseEntity<?> getCurrentUser(@RequestHeader("Authorization") String authHeader) {
         String token = authHeader.replace("Bearer ", "");

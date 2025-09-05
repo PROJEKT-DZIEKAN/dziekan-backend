@@ -25,6 +25,7 @@ public class Group {
     private String description;
 
     @Column(nullable = true)
+    @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @Min(0) @Column

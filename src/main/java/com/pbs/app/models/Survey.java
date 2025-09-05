@@ -6,7 +6,9 @@ import lombok.*;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 @Entity
@@ -33,4 +35,13 @@ public class Survey {
     @Builder.Default
     @JsonIgnore
     private List<SurveyQuestion> questions = new ArrayList<>();
+
+    @Column(name = "is_active")
+    @Builder.Default
+    private Boolean isActive = true;
+
+    @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    @JsonIgnore
+    private Set<UserCompletedSurvey> completedByUsers = new HashSet<>();
 }
