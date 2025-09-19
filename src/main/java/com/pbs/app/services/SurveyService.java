@@ -103,7 +103,7 @@ public class SurveyService {
     }
 
     public List<Survey> getAllSurveys() {
-        return surveyRepo.findAll();
+        return surveyRepo.findAllWithQuestionsAndOptions();
     }
 
     public Survey updateSurvey(Long surveyId, SurveyRequest req) {
@@ -113,36 +113,70 @@ public class SurveyService {
 
         existing.setTitle(req.getTitle());
         existing.setDescription(req.getDescription());
-
-        List<SurveyQuestion> updatedQuestions = new ArrayList<>();
-
         if (req.getQuestions() != null) {
-            for (QuestionRequest qReq : req.getQuestions()) {
-                SurveyQuestion q = new SurveyQuestion();
-                q.setText(qReq.getText());
-                q.setType(qReq.getType());
-                q.setSurvey(existing);
-
-                if (qReq.getSurveyOptions() != null) {
-                    List<SurveyOption> updatedOptions = new ArrayList<>();
-                    for (OptionRequest oReq : qReq.getSurveyOptions()) {
-                        SurveyOption o = new SurveyOption();
-                        o.setText(oReq.getText());
-                        o.setQuestion(q);
-                        updatedOptions.add(o);
-                    }
-                    q.getSurveyOptions().clear();
-                    q.getSurveyOptions().addAll(updatedOptions);
+            List<SurveyQuestion> existingQuestions = new ArrayList<>(existing.getQuestions());
+            
+            for (int i = 0; i < req.getQuestions().size(); i++) {
+                QuestionRequest qReq = req.getQuestions().get(i);
+                SurveyQuestion question;
+                if (i < existingQuestions.size()) {
+                    question = existingQuestions.get(i);
+                    question.setText(qReq.getText());
+                    question.setType(qReq.getType());
+                } else {
+                    question = new SurveyQuestion();
+                    question.setText(qReq.getText());
+                    question.setType(qReq.getType());
+                    question.setSurvey(existing);
+                    existing.getQuestions().add(question);
                 }
+                if (qReq.getSurveyOptions() != null) {
+                    List<SurveyOption> existingOptions = new ArrayList<>(question.getSurveyOptions());
+                    
+                    for (int j = 0; j < qReq.getSurveyOptions().size(); j++) {
+                        OptionRequest oReq = qReq.getSurveyOptions().get(j);
+                        SurveyOption option;
 
-                updatedQuestions.add(q);
+                        if (j < existingOptions.size()) {
+                            option = existingOptions.get(j);
+                            option.setText(oReq.getText());
+                        } else {
+                            option = new SurveyOption();
+                            option.setText(oReq.getText());
+                            option.setQuestion(question);
+                            question.getSurveyOptions().add(option);
+                        }
+                    }
+                    if (qReq.getSurveyOptions().size() < existingOptions.size()) {
+                        for (int k = qReq.getSurveyOptions().size(); k < existingOptions.size(); k++) {
+                            SurveyOption optionToRemove = existingOptions.get(k);
+                            if (!isOptionReferencedByAnswers(optionToRemove.getId())) {
+                                question.getSurveyOptions().remove(optionToRemove);
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (req.getQuestions().size() < existingQuestions.size()) {
+                for (int i = req.getQuestions().size(); i < existingQuestions.size(); i++) {
+                    SurveyQuestion questionToRemove = existingQuestions.get(i);
+                    if (!isQuestionReferencedByAnswers(questionToRemove.getId())) {
+                        existing.getQuestions().remove(questionToRemove);
+                    }
+                }
             }
         }
 
-        existing.getQuestions().clear();
-        existing.getQuestions().addAll(updatedQuestions);
-
         return surveyRepo.save(existing);
+    }
+    
+    private boolean isOptionReferencedByAnswers(Long optionId) {
+        return answerRepo.existsBySurveyOptionId(optionId);
+    }
+    
+    private boolean isQuestionReferencedByAnswers(Long questionId) {
+        return answerRepo.existsByQuestionId(questionId);
     }
 
 

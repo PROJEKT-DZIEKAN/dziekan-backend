@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pbs.app.enums.QuestionType;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +24,7 @@ public class SurveyQuestion {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "survey_id", nullable = false)
+    @JsonIgnore
     private Survey survey;
 
     @Column(nullable = false, length = 1000)
@@ -31,9 +34,9 @@ public class SurveyQuestion {
     @Column(nullable = false)
     private QuestionType type; // SINGLE or MULTIPLE
 
-    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Fetch(FetchMode.SUBSELECT)
     @Builder.Default
-    @JsonIgnore
     private List<SurveyOption> surveyOptions = new ArrayList<>();
 }
 

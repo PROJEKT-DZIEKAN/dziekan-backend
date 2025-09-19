@@ -11,4 +11,6 @@ import java.util.List;
 public interface SurveyUserAnswerRepository extends JpaRepository<SurveyUserAnswer, SurveyUserAnswerId> {
     List<SurveyUserAnswer> findByUserId(Long userId);
     List<SurveyUserAnswer> findByQuestionId(Long questionId);
+    boolean existsBySurveyOptionId(Long surveyOptionId);
+    boolean existsByQuestionId(Long questionId);
 }
