@@ -27,4 +27,7 @@ public interface SurveyRepository extends JpaRepository<Survey, Long> {
            "THEN true ELSE false END as completed " +
            "FROM Survey s WHERE s.isActive = true")
     List<Object[]> findAllSurveysWithCompletionStatus(@Param("userId") Long userId);
+
+    @Query("SELECT s FROM Survey s ORDER BY s.createdAt DESC")
+    List<Survey> findAllWithQuestionsAndOptions();
 }
