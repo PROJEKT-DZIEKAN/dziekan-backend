@@ -1,6 +1,7 @@
 package com.pbs.app.controllers;
 
 import com.pbs.app.models.Notification;
+import com.pbs.app.repositories.UserRepository;
 import com.pbs.app.services.NotificationServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -22,26 +23,20 @@ public class NotificationRestController {
 
     private final NotificationServiceImpl notificationService;
     private final SimpMessagingTemplate messagingTemplate;
+    private final UserRepository userRepository;
 
-    @PostMapping("/send/{userId}")
-    public void sendNotification(@PathVariable Long userId, @RequestBody String message) {
-        messagingTemplate.convertAndSendToUser(
-                userId.toString(),
-                "/queue/notifications",
-                message
-        );
-    }
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<Notification> createNotification(@RequestBody Notification notification) {
+        if (notification.getUsers() == null || notification.getUsers().isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
         List<Long> userIds = notification.getUsers().stream()
                 .map(User::getId)
-                .collect(Collectors.toList());
-        log.info("REST createNotification for users {}", userIds);
+                .toList();
 
         Notification saved = notificationService.createNotification(notification);
 
-        // Wyślij powiadomienie przez WebSocket do każdego użytkownika
         for (Long userId : userIds) {
             messagingTemplate.convertAndSendToUser(
                     userId.toString(),
@@ -53,16 +48,26 @@ public class NotificationRestController {
         return ResponseEntity.ok(saved);
     }
 
-
     @PostMapping("/broadcast")
-    public void broadcastNotification(@RequestBody String message) {
-        messagingTemplate.convertAndSend("/topic/notifications", message);
+    public ResponseEntity<Notification> broadcastNotification(@RequestBody Notification notification) {
+        List<User> allUsers = userRepository.findAll();
+        notification.setUsers(allUsers);
+        Notification saved = notificationService.createNotification(notification);
+        for (User user : allUsers) {
+            messagingTemplate.convertAndSendToUser(
+                    user.getId().toString(),
+                    "/queue/notifications",
+                    saved
+            );
+        }
+
+        messagingTemplate.convertAndSend("/topic/notifications", saved);
+
+        return ResponseEntity.ok(saved);
     }
 
     @DeleteMapping("/{notificationId}")
     public ResponseEntity<String> deleteNotification(@PathVariable Long notificationId) {
-        log.info("REST deleteNotification: {}", notificationId);
-
         notificationService.deleteNotification(notificationId);
         messagingTemplate.convertAndSend("/topic/notification-deleted", notificationId.toString());
 
@@ -71,8 +76,6 @@ public class NotificationRestController {
 
     @PutMapping("/{notificationId}/read")
     public ResponseEntity<String> markAsRead(@PathVariable Long notificationId) {
-        log.info("REST markAsRead: {}", notificationId);
-
         notificationService.markNotificationAsRead(notificationId);
         messagingTemplate.convertAndSend("/topic/notification-read", notificationId.toString());
 
@@ -81,20 +84,17 @@ public class NotificationRestController {
 
     @GetMapping()
     public List<Notification> getNotifications(@RequestParam Long userId) {
-        log.info("REST getNotifications for user {}", userId);
         return notificationService.getAllNotificationsbyUserId(userId);
     }
 
     @GetMapping("/unread")
     public List<Notification> getUnreadNotifications(@RequestParam Long userId) {
-        log.info("REST getUnreadNotifications for user {}", userId);
         return notificationService.getAllByUserIdAndIsReadFalse(userId);
     }
 
     @GetMapping("/newest")
     public List<Notification> getNewestNotifications(@RequestParam Long userId)
     {
-        log.info("REST getNewestNotifications for user {}", userId);
         return notificationService.getAllByUserIdOrderByCreatedAtDesc(userId);
     }
 }

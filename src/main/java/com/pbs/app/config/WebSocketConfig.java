@@ -85,13 +85,26 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 })
                 .withSockJS();
         registry.addEndpoint("/ws-test")
-                .setAllowedOriginPatterns("*") // Tymczasowo dla testów
+                .setAllowedOriginPatterns("*")
                 .setHandshakeHandler(new DefaultHandshakeHandler() {
                     @Override
                     protected Principal determineUser(ServerHttpRequest req, WebSocketHandler wsh,
                                                       Map<String, Object> attrs) {
-                        log.info("WebSocket handshake dla testów");
-                        return new StompPrincipal("1");
+                        String query = req.getURI().getQuery();
+                        String userId = "default";
+
+                        if (query != null && query.contains("userId=")) {
+                            String[] params = query.split("&");
+                            for (String param : params) {
+                                if (param.startsWith("userId=")) {
+                                    userId = param.split("=")[1];
+                                    break;
+                                }
+                            }
+                        }
+
+                        log.info("Handshake auth OK, principal: " + userId);
+                        return new StompPrincipal(userId);
                     }
                 })
                 .withSockJS();
